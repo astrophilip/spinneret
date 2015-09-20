@@ -13,6 +13,9 @@ REARTH = 3959.0 #miles
 STEP = 0.3 #miles
 RAD = np.radians(1)
 
+def nonsense():
+    pass
+
 def googleGeocoding(address):
     """This function takes an address and returns the latitude and longitude
     from the Google geocoding API."""
