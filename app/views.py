@@ -9,8 +9,8 @@ import pandas as pd
 
 GoogleMaps(app)
 
-df_grid = pd.read_pickle('./yelp_dataset/df_grid')
-similarity_matrix = np.load('./yelp_dataset/similarity_mat')
+df_grid = pd.read_pickle('./yelp_dataset/df_grid.pickle')
+similarity_matrix = np.load('./yelp_dataset/similarity_mat.pickle')
 
 @app.route('/input')
 def cities_input():
