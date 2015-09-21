@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import ipdb
 
 REARTH = 3959.0 #miles
 STEP = 0.3 #miles
@@ -22,6 +23,7 @@ class CityNeighborhoods(object):
                 (business_df.latitude < bounds[1])
         cond2 = (business_df.longitude > bounds[2]) &  \
                 (business_df.longitude < bounds[3])
+        ipdb.set_trace()
 
         self.business_df = business_df[cond1 & cond2]
         self.grid_df = construct_grid_df()
@@ -61,5 +63,3 @@ class CityNeighborhoods(object):
         df.index.name = 'grid_id'
         df['latlon'] = zip(df['latitude'],df['longitude'])
         return df
-
-    
