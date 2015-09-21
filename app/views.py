@@ -18,8 +18,8 @@ def cities_input():
 
 @app.route('/output')
 def cities_output():
-    db = mdb.connect(user='root',host='localhost',db="yelp", \
-        charset = 'utf8')
+    #db = mdb.connect(user='root',host='localhost',db="yelp", \
+    #    charset = 'utf8')
 
     #pull 'ID' from input field and store it
     address = request.args.get('address')
