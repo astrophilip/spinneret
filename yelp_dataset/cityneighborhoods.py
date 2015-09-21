@@ -12,8 +12,12 @@ def cartesian_prod(x,y):
 
 
 class CityNeighborhoods(object):
-    _bounds= {'phoenix':[33.0,34.0,-112.6,-111.4]}
-    _lats = {'phoenix' : 33.4}
+    _bounds= {'phoenix':[33.0,34.0,-112.6,-111.4],\
+            'las vegas':[35.95,36.35,-115.35,-115.0]\
+            }
+    _lats = {'phoenix' : 33.4,\
+            'las vegas': 36.12\
+            }
 
     def __init__(self,city='phoenix',business_df=None):
         if business_df is None:
