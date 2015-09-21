@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from collections import Counter
 import ipdb
 
 REARTH = 3959.0 #miles
@@ -80,7 +81,6 @@ class CityNeighborhoods(object):
         #takes a list of cat_counters
         counter_list = []
         for estab_list in self.grid_df.estab_list:
-            cat_count = self.construct_grid_cat_counter(self.business_df,
-                                    estab_list)
+            cat_count = self.construct_grid_cat_counter(estab_list)
             counter_list.append(cat_count)
         self.grid_df['cat_counter'] = counter_list
