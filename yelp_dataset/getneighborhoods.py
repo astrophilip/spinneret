@@ -69,14 +69,19 @@ def parse_cats(html):
 
 def parse_dollars(html):
     dirty_dollars = html.findAll('span',{'class':'business-attribute price-range'})
-    return map(lambda x: len(x.contents[0]),dirty_dollars)
+    dollars= {}
+    for d in dirty_dollars:
+        item = d.find_parents(limit=3)[2]
+        biz_name = parse_biz_names(item)[0]
+        dollars[biz_name] = len(d.contents[0])
+    return dollars
 
 def parse_ratings(html):
     dirty_ratings = html.findAll('img',{'class':'offscreen','height':'303'})
     ratings = map(lambda x: float(x.attrs['alt'][:3]),dirty_ratings)
     return ratings
 
-def yelp_by_neighborhood(neighborhood,max_search=1000):
+def yelp_by_neighborhood(neighborhood,max_search=1000,sleep=True):
     # scrapes yelp results page for business information in map script
     tst = "http://www.yelp.com/search?&l=p:MA:Boston::" + neighborhood + "&start=0"
     s = requests.Session()
@@ -101,13 +106,15 @@ def yelp_by_neighborhood(neighborhood,max_search=1000):
         ratings = parse_ratings(html)
 
         temp_dict = clean_latlon_dict(latlon_dict)
-        for n,c,d,r in zip(names,cats,dollars,ratings):
+        for n,c,r in zip(names,cats,ratings):
             temp_dict[n]['categories']= c
-            temp_dict[n]['dollars']= d
             temp_dict[n]['stars']= r
+        for n in dollars.keys():
+            temp_dict[n]['dollars'] = dollars[n]
 
         biz_dict.update(temp_dict)
-        time.sleep(random.uniform(2,7))
+        if sleep:
+            time.sleep(random.uniform(1,5))
     return N, biz_dict
 
 def record_neighborhood(n_id,biz_dict):
