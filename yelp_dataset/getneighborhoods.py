@@ -78,8 +78,14 @@ def parse_dollars(html):
 
 def parse_ratings(html):
     dirty_ratings = html.findAll('img',{'class':'offscreen','height':'303'})
-    ratings = map(lambda x: float(x.attrs['alt'][:3]),dirty_ratings)
+    ratings= {}
+    for r in dirty_ratings:
+        item = r.find_parents(limit=4)[3]
+        biz_name = parse_biz_names(item)[0]
+        ratings[biz_name] = len(r.contents[0])
     return ratings
+
+
 
 def yelp_by_neighborhood(neighborhood,max_search=1000,sleep=True):
     # scrapes yelp results page for business information in map script
@@ -106,9 +112,12 @@ def yelp_by_neighborhood(neighborhood,max_search=1000,sleep=True):
         ratings = parse_ratings(html)
 
         temp_dict = clean_latlon_dict(latlon_dict)
-        for n,c,r in zip(names,cats,ratings):
+        for n,c in zip(names,cats):
             temp_dict[n]['categories']= c
+
+        for r in ratings.keys():
             temp_dict[n]['stars']= r
+
         for n in dollars.keys():
             temp_dict[n]['dollars'] = dollars[n]
 
