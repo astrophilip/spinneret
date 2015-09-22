@@ -68,7 +68,7 @@ def parse_cats(html):
     for c in dirty_cats:
         tmp = c.contents[1::2]
         value = clean_dirty_cat(tmp)
-        biz_name = parse_biz_names(item.find_parents(limit=2)[1])[0]
+        biz_name = parse_biz_names(c.find_parents(limit=2)[1])[0]
         cats[biz_name]= value
     return cats
 
