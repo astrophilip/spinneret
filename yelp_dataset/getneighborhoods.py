@@ -136,10 +136,11 @@ def record_neighborhood(n_id,biz_dict):
     with open(filename,'w') as f:
         json.dump(biz_dict,f)
 
-def parse_all_neighborhoods(neighborhoods):
+def parse_all_neighborhoods(neighborhoods,start_num,sleep= True):
     counts = []
-    for nid,neighborhood in enumerate(neighborhoods):
-        N, biz_dict = yelp_by_neighborhood(neighborhood)
+    for neighborhood,nid in zip(neighborhoods[start_num:],range(start_num,len(neighborhoods))):
+        print neighborhood
+        N, biz_dict = yelp_by_neighborhood(neighborhood,sleep=sleep)
         record_neighborhood(nid, biz_dict)
         counts.append(N)
     print counts
