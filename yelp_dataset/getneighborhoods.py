@@ -5,8 +5,8 @@ from bs4 import BeautifulSoup
 import re
 import json
 import ipdb
-
-
+import random
+import time
 
 neighborhoods = \
 ['Allston/Brighton' , 'Arlington_Center' , 'Arlington_Heights','Back_Bay', \
@@ -67,7 +67,16 @@ def parse_cats(html):
     dirty_cats= map(lambda x: x.contents[1::2],dirty_cats)
     return [clean_dirty_cat(dc) for dc in dirty_cats]
 
-def yelp_by_neighborhood(neighborhood):
+def parse_dollars(html):
+    dirty_dollars = html.findAll('span',{'class':'business-attribute price-range'})
+    return map(lambda x: len(x.contents[0]),dirty_dollars)
+
+def parse_ratings(html):
+    dirty_ratings = html.findAll('img',{'class':'offscreen','height':'303'})
+    ratings = map(lambda x: float(x.attrs['alt'][:3]),dirty_ratings)
+    return ratings
+
+def yelp_by_neighborhood(neighborhood,max_search=1000):
     # scrapes yelp results page for business information in map script
     tst = "http://www.yelp.com/search?&l=p:MA:Boston::" + neighborhood + "&start=0"
     s = requests.Session()
@@ -76,8 +85,7 @@ def yelp_by_neighborhood(neighborhood):
 
     m = re.search(r'of\s(.+)',pgntn)
     N = int(m.group(1))
-
-    max_search = 1000
+    print N
     maxN = min(N,max_search)
     biz_dict = {}
     for start_page in range(0,maxN,10):
@@ -85,14 +93,32 @@ def yelp_by_neighborhood(neighborhood):
         print start_page
         tst = "http://www.yelp.com/search?&l=p:MA:Boston::" + neighborhood + "&start=" + str(start_page)
         html = readparse(s, tst)
-        #ipdb.set_trace()
 
         latlon_dict = parse_latlon(html)
         names = parse_biz_names(html)
         cats = parse_cats(html)
+        dollars = parse_dollars(html)
+        ratings = parse_ratings(html)
 
         temp_dict = clean_latlon_dict(latlon_dict)
-        for n,c in zip(names,cats):
+        for n,c,d,r in zip(names,cats,dollars,ratings):
             temp_dict[n]['categories']= c
+            temp_dict[n]['dollars']= d
+            temp_dict[n]['stars']= r
+
         biz_dict.update(temp_dict)
+        time.sleep(random.uniform(3,7))
     return N, biz_dict
+
+def record_neighborhood(n_id,biz_dict):
+    filename = 'neighborhoods/BOS_'+str(n_id)+'.json'
+    with open(filename,'w') as f:
+        json.dump(biz_dict,f)
+
+def parse_all_neighborhoods(neighborhoods):
+    counts = []
+    for nid,neighborhood in enumerate(neighborhoods):
+        N, biz_dict = yelp_by_neighborhood(neighborhood)
+        record_neighborhood(nid, biz_dict)
+        counts.append(N)
+    print counts
