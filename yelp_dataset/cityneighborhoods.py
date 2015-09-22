@@ -2,6 +2,10 @@ import numpy as np
 import pandas as pd
 from collections import Counter
 import ipdb
+import getneighborhoods as gn
+
+
+neighborhoods = gn.neighborhoods
 
 REARTH = 3959.0 #miles
 STEP = 0.3 #miles

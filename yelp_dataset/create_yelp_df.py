@@ -1,7 +1,7 @@
 import pandas as pd
 import sqlalchemy
 from sqlalchemy import VARCHAR, TEXT
-
+import os
 
 def _yelp_to_str(filename):
     with open(filename, 'rb') as f:
