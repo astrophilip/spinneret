@@ -114,7 +114,7 @@ def yelp_by_neighborhood(neighborhood,max_search=1000,sleep=True):
 
         biz_dict.update(temp_dict)
         if sleep:
-            time.sleep(random.uniform(1,5))
+            time.sleep(random.uniform(1,4))
     return N, biz_dict
 
 def record_neighborhood(n_id,biz_dict):
