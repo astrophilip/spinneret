@@ -6,6 +6,21 @@ import re
 import json
 import ipdb
 
+
+
+neighborhoods = \
+['Allston/Brighton' , 'Arlington_Center' , 'Arlington_Heights','Back_Bay', \
+'Beacon_Hill','Brookline_Village','Central_Square','Charlestown','Chinatown',\
+'Coolidge_Corner','Davis_Square','Dorchester','Downtown','Dudley_Square',\
+'East_Arlington','East_Boston','East_Cambridge','Egleston_Square','Fenway',\
+'Fields_Corner','Financial_District', \
+'Harvard_Square','Huron_Village' , 'Hyde_Park','Inman_Square','Jamaica_Plain', \
+'Kendall_Square/MIT','Leather_District','Mattapan','Mattapan_Square',\
+'Mission_Hill','North_Cambridge','North_End','Porter_Square','Roslindale', \
+'Roslindale_Village','South_Boston','South_End','Teele_Square', \
+'Uphams_Corner','Waterfront','West_Roxbury','West_Roxbury_Center','Winthrop']
+
+
 def readparse(s,inputurl):
     # return bs4 parsed html page
     html = s.get(inputurl).text
@@ -51,20 +66,6 @@ def parse_cats(html):
     dirty_cats= html.find_all('span',{'class':"category-str-list"})
     dirty_cats= map(lambda x: x.contents[1::2],dirty_cats)
     return [clean_dirty_cat(dc) for dc in dirty_cats]
-
-
-
-neighborhoods = \
-['Allston/Brighton' , 'Arlington_Center' , 'Arlington_Heights','Back_Bay', \
-'Beacon_Hill','Brookline_Village','Central_Square','Charlestown','Chinatown',\
-'Coolidge_Corner','Davis_Square','Dorchester','Downtown','Dudley_Square',\
-'East_Arlington','East_Boston','East_Cambridge','Egleston_Square','Fenway',\
-'Fields_Corner','Financial_District', \
-'Harvard_Square','Huron_Village' , 'Hyde_Park','Inman_Square','Jamaica_Plain', \
-'Kendall_Square/MIT','Leather_District','Mattapan','Mattapan_Square',\
-'Mission_Hill','North_Cambridge','North_End','Porter_Square','Roslindale', \
-'Roslindale_Village','South_Boston','South_End','Teele_Square', \
-'Uphams_Corner','Waterfront','West_Roxbury','West_Roxbury_Center','Winthrop']
 
 def yelp_by_neighborhood(neighborhood):
     # scrapes yelp results page for business information in map script
