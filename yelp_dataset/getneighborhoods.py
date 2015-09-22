@@ -64,8 +64,13 @@ def parse_biz_names(html):
 
 def parse_cats(html):
     dirty_cats= html.find_all('span',{'class':"category-str-list"})
-    dirty_cats= map(lambda x: x.contents[1::2],dirty_cats)
-    return [clean_dirty_cat(dc) for dc in dirty_cats]
+    cats = {}
+    for c in dirty_cats:
+        tmp = c.contents[1::2]
+        value = clean_dirty_cat(tmp)
+        biz_name = parse_biz_names(item.find_parents(limit=2)[1])[0]
+        cats[biz_name]= value
+    return cats
 
 def parse_dollars(html):
     dirty_dollars = html.findAll('span',{'class':'business-attribute price-range'})
@@ -82,7 +87,7 @@ def parse_ratings(html):
     for r in dirty_ratings:
         item = r.find_parents(limit=4)[3]
         biz_name = parse_biz_names(item)[0]
-        ratings[biz_name] = len(r.contents[0])
+        ratings[biz_name] = r.attrs['alt'][:3]
     return ratings
 
 
@@ -112,11 +117,11 @@ def yelp_by_neighborhood(neighborhood,max_search=1000,sleep=True):
         ratings = parse_ratings(html)
 
         temp_dict = clean_latlon_dict(latlon_dict)
-        for n,c in zip(names,cats):
-            temp_dict[n]['categories']= c
 
-        for r in ratings.keys():
-            temp_dict[n]['stars']= r
+        for n in cats.keys():
+            temp_dict[n]['categories'] = cats[n]
+        for n in ratings.keys():
+            temp_dict[n]['stars']= ratings[n]
 
         for n in dollars.keys():
             temp_dict[n]['dollars'] = dollars[n]
