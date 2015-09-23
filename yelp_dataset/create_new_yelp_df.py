@@ -5,7 +5,7 @@ import os
 import re
 
 def process_json(f):
-    nid = re.search(r"(\w\w\w_\d+).json").group(1)
+    nid = re.search(r"(\w\w\w_\d+).json",f).group(1)
     df = pd.read_json(f,orient='index')
     df['neighborhood'] = nid
     print nid

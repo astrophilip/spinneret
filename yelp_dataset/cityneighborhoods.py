@@ -15,7 +15,7 @@ def cartesian_prod(x,y):
     return np.array([np.tile(x,len(y)),np.repeat(y,len(x))]).T
 
 
-class CityNeighborhoods(object):
+class CityNeighborhoods_old(object):
     _bounds= {'phoenix':[33.0,34.0,-112.6,-111.4],\
             'las vegas':[35.95,36.35,-115.35,-115.0]\
             }
@@ -23,7 +23,7 @@ class CityNeighborhoods(object):
             'las vegas': 36.12\
             }
 
-    def __init__(self,city='phoenix',business_df=None):
+    def __init__(self,city='BOS',business_df=None):
         if business_df is None:
             raise Exception('Must supply business_df')
         self.city = city

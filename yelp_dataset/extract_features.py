@@ -113,6 +113,3 @@ def similar_grid_points(ref_lat,ref_lon, df_grid,similarity_matrix,
     df['distances'] = distances
     df = df[df.distances > 2.0 ]
     return df.head(num_results)
-
-def find_similar_to_ref(lat,lon, idx_grid,df_grid):
-    pass
