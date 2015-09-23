@@ -63,7 +63,6 @@ class CityNeighborhood(object):
         return cat_list
 
     def _construct_neighborhood_df(self):
-        print 'initializing neighborhood_df'
         mean_lat = self.business_df.groupby('neighborhood').latitude.mean()
         mean_lon = self.business_df.groupby('neighborhood').longitude.mean()
         cat_concat = self.business_df.groupby('neighborhood').categories.sum()
@@ -97,7 +96,7 @@ class CityNeighborhood(object):
     def find_similar_to_ref(self,input_vector,num_results=5):
         assert(self.X.shape[1] == input_vector.shape[0])
         sims = cosine_similarity(self.X,input_vector)[:,0]
-        ind_sort = sims.argsort()[::-1]
+        ind_sort = sims.argsort()[:-1:-1]
         return ind_sort[:num_results]
 
 
@@ -111,3 +110,15 @@ class CityNeighborhood(object):
         cityB = CityNeighborhood(city = self.city, business_df=sampleB, \
                             _features = self._features)
         return cityA,cityB
+
+    def self_validate(self,Niterations=5):
+        outcomes = []
+        N = len(self.neighborhood_df)
+        for i in range(Niterations):
+            c1, c2 = self._rand_split()
+            sim_split = cosine_similarity(c1.X,c2.X)
+            outcome.append(sim_split.argmax(axis=0) == np.arange(N).mean())
+        return np.mean(outcomes)
+
+def join(cityA,cityB):
+    pass
