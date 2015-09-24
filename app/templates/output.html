@@ -2,7 +2,69 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    {{inputmap.js}}
+
+    <script src="http://maps.googleapis.com/maps/api/js?sensor=false" type="text/javascript"></script>
+
+    <style type="text/css">
+          #view-side { height:450px;width:600px;margin:0; }
+    </style>
+
+    <script type="text/javascript">
+
+
+        function initialize_map() {
+            var map  = new google.maps.Map(
+            document.getElementById('view-side'), {
+                center: new google.maps.LatLng({{input['lat']}}, {{input['lng']}}),
+                zoom: 13,
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+            });
+
+            var triangleCoords  = {{polygon|tojson}}
+
+        /* triangleCoords.forEach(function(p) {
+                var point               = new google.maps.LatLng(p.lat, p.lng);
+                var marker              = new google.maps.Marker({position: point,
+                                  map: map,
+                                  icon: "http://maps.google.com/mapfiles/ms/icons/red-dot.png"
+                                  });
+
+              })
+              */
+
+
+            var marker_0  = new google.maps.Marker({
+                position: new google.maps.LatLng({{input['lat']}}, {{input['lng']}}),
+                map: map,
+                icon: "http://maps.google.com/mapfiles/ms/icons/red-dot.png"
+            });
+
+            // Construct the polygon.
+            var bermudaTriangle = new google.maps.Polygon({
+              paths: triangleCoords,
+              strokeColor: '#FF0000',
+              strokeOpacity: 0.8,
+              strokeWeight: 2,
+              fillColor: '#FF0000',
+              fillOpacity: 0.35
+            });
+            bermudaTriangle.setMap(map);
+
+
+        }
+
+        function getInfoCallback(map, content) {
+            var infowindow              = new google.maps.InfoWindow({content: content});
+            return function() {
+                    infowindow.setContent(content);
+                    infowindow.open(map, this);
+                };
+        }
+        google.maps.event.addDomListener(window, 'load', initialize_map);
+
+    </script>
+
+
     {{outputmap.js}}
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -98,7 +160,7 @@
       <p class="lead">Below is the neighborhood of your query<br> </p>
     </div>
     <div>
-    {{inputmap.html}}
+      <div id="view-side" class="map"></div>
     </div>
     <table class="table table-hover">
     <tr><th>Neighborhood</th></tr>

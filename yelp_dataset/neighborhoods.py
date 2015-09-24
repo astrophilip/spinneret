@@ -9,6 +9,8 @@ import ipdb
 import getneighborhoods as gn
 import create_new_yelp_df as ydf
 from numpy.linalg import norm
+from geopy import distance
+from shapely.geometry import MultiPoint
 
 NEIGHBORHOODS = gn.neighborhoods
 COUNTS = gn.counts
@@ -17,8 +19,16 @@ REARTH = 3959.0 #miles
 STEP = 0.3 #miles
 RAD = np.radians(1)
 
-def cartesian_prod(x,y):
-    return np.array([np.tile(x,len(y)),np.repeat(y,len(x))]).T
+
+def googleGeocoding(address):
+    """This function takes an address and returns the latitude and longitude
+    from the Google geocoding API."""
+    baseURL = 'http://maps.googleapis.com/maps/api/geocode/json?'
+    geocodeURL = baseURL + 'address=' + address #+'&key=' + key
+    geocode = json.loads(urllib.urlopen(geocodeURL).read())
+    lat = geocode['results'][0]['geometry']['location']['lat']
+    lon = geocode['results'][0]['geometry']['location']['lng']
+    return lat, lon
 
 
 class CityNeighborhood(object):
@@ -79,8 +89,25 @@ class CityNeighborhood(object):
         df['name'] = [ self.neighborhoods[i] for i in int_id]
         count = self.all_counts[self.city]
         df['count'] = [count[i] for i in int_id]
+        df['count'].fillna(df['count'].mean(),inplace=True)
+        df['dollar'].fillna(df['dollar'].mean(),inplace=True)
         df['cat_counters'] = self._get_cat_counters(df.categories)
         return df
+
+    def nearest_neighborhood(self,latlon=None,address=None):
+        if address:
+            lat,lon = googleGeocoding(address)
+        grid_points = zip(self.neighborhood_df.latitude,self.neighborhood_df.longitude)
+        distances = np.array([distance((lat,lon),gp) for gp in grid_points])
+        id_min = distances.argmin()
+        return id_min
+
+    def neighborhood_polygon(self,nid):
+        p = zip(self.neighborhood_df.latitude, self.neighborhood_df.longitude)
+        poly = MultiPoint(p).convex_hull
+        x,y = poly.exterior.xy
+        #output points
+        #return
 
     def _construct_feature_matrix(self):
         #ipdb.set_trace()
@@ -91,8 +118,13 @@ class CityNeighborhood(object):
         self.features = v.feature_names_
         otherX = self.neighborhood_df[['dollar','stars','count']].values
         otherX = otherX - otherX.mean(axis=0)
+        normX  = norm(otherX,axis=0)
         otherX = otherX/norm(otherX,axis=0)
+        otherX[np.isnan(otherX)] = 0.0
         return np.hstack((catX,otherX))
+
+    def getVector(self,neighborhood_id):
+        return self.X[neighborhood_id,:]
 
     def find_similar_to_ref(self,input_vector,num_results=5):
         assert(self.X.shape[1] == input_vector.shape[0])

@@ -33,13 +33,13 @@ def cities_output():
     sim_lat = df_sim.latitude.values[0]
     sim_lon = df_sim.longitude.values[0]
 
-    inputmap = Map(
-       identifier = "view-side",
-       lat = ref_latitude,
-       lng = ref_longitude,
-       markers=[(ref_latitude, ref_longitude)],
-       style = "height:450px;width:600px;margin:0;"
-    )
+    input = {'lat': ref_latitude, 'lng': ref_longitude}
+
+    polygon = [ {'lat': 25.774, 'lng': -80.190},\
+                {'lat': 18.466, 'lng': -66.118},\
+                {'lat': 32.321, 'lng': -64.757},\
+                {'lat': 25.774, 'lng': -80.190} \
+                ];
 
     outputmap = Map(
        identifier = "view-side2",
@@ -49,17 +49,5 @@ def cities_output():
        style = "height:450px;width:600px;margin:0;"
     )
 
-    #Output the qualities that are important
-
-    # with db:
-    #     cur = db.cursor()
-    #     #just select the city from the world_innodb that the user inputs
-    #     cur.execute("SELECT business_id, category FROM bus_cat WHERE category='%s';" % bus)
-    #     query_results = cur.fetchall()
-    spots = ['a','b','c']
-    # bus = []
-    # for result in query_results:
-    #     bus.append(dict(business_id=result[0], category=result[1]))
-    #     the_result = ''
-    the_result = ''
-    return render_template("output.html", inputmap=inputmap,outputmap=outputmap)
+    return render_template("output.html",input=input,
+            polygon=polygon,outputmap=outputmap)
