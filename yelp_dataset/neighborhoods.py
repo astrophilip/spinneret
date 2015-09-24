@@ -11,6 +11,8 @@ import create_new_yelp_df as ydf
 from numpy.linalg import norm
 from geopy import distance
 from shapely.geometry import MultiPoint
+import cPickle
+import json, urllib
 
 NEIGHBORHOODS = gn.neighborhoods
 COUNTS = gn.counts
@@ -105,9 +107,13 @@ class CityNeighborhood(object):
     def neighborhood_polygon(self,nid):
         p = zip(self.neighborhood_df.latitude, self.neighborhood_df.longitude)
         poly = MultiPoint(p).convex_hull
-        x,y = poly.exterior.xy
-        #output points
-        #return
+        px,py = poly.exterior.xy
+        output_points =[{'lat':x, 'lng':y} for x,y in zip(px,py)]
+        return output_points
+
+    def neighborhood_containing_point(self,latlon=None,address=None):
+        nid = self.nearest_neighborhood(latlon=latlon, address=address)
+        return self.neighborhood_polygon(nid)
 
     def _construct_feature_matrix(self):
         #ipdb.set_trace()
@@ -123,15 +129,14 @@ class CityNeighborhood(object):
         otherX[np.isnan(otherX)] = 0.0
         return np.hstack((catX,otherX))
 
-    def getVector(self,neighborhood_id):
-        return self.X[neighborhood_id,:]
-
     def find_similar_to_ref(self,input_vector,num_results=5):
         assert(self.X.shape[1] == input_vector.shape[0])
         sims = cosine_similarity(self.X,input_vector)[:,0]
         ind_sort = sims.argsort()[:-1:-1]
         return ind_sort[:num_results]
 
+    def getVector(self,neighborhood_id):
+        return self.X[neighborhood_id,:]
 
     def _rand_split(self):
         N = len(self.business_df)
@@ -160,5 +165,16 @@ class CityNeighborhood(object):
             outcomes.append(outcome)
         return np.mean(outcomes)
 
+    def pickle(self,filename):
+        with open(filename,'wb') as oo:
+            cPickle.dump(self,oo)
+
+
 def join(cityA,cityB):
     pass
+
+
+def unpickle(filename):
+    with open(filename,'rb') as oo:
+        city = cPickle.load(oo)
+    return city

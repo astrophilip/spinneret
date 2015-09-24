@@ -13,7 +13,7 @@ def process_json(f):
 
 def create_bus_df_from_neighborhoods(city='BOS'):
     # read the entire file into a pandas dataframe
-    dirname = 'neighborhoods/'
+    dirname = os.path.join(os.path.dirname(__file__),"neighborhoods/")
     command = 'ls '+dirname+city+'*'
     with os.popen(command) as com:
         files_dirty = com.readlines()
