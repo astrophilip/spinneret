@@ -27,20 +27,21 @@ class CityNeighborhood(object):
     feautures.
     Provides methods to compare similarities of neighborhoods
     '''
-    def __init__(self,city='BOS',business_df=None, _features = None):
+    all_neighborhoods = NEIGHBORHOODS
+    all_counts = COUNTS
+    def __init__(self,city='BOS',business_df=None, features = None):
         if business_df is None:
             business_df = ydf.create_bus_df_from_neighborhoods(city)
 
         self.city = city
-        self._features = _features
+        self.features = features
         #ipdb.set_trace()
 
-        self.neighborhoods = NEIGHBORHOODS[city]
-        self.nids = range(len(NEIGHBORHOODS))
+        self.neighborhoods = self.all_neighborhoods[city]
+        self.nids = range(len(self.neighborhoods))
         self.business_df = business_df[business_df.city == city]
         self.neighborhood_df = self._construct_neighborhood_df()
         self.X = self._construct_feature_matrix()
-        #self.cat_counter_list = self.construct_neighborhood_cat_counter_list()
 
     def find_estab(self,lat,lon, dist):
         # dist in miles
@@ -55,8 +56,8 @@ class CityNeighborhood(object):
         cat_list = []
         for cat in X:
             c = Counter(cat)
-            if self._features:
-                d = {k:c[k] for k in self._features}
+            if self.features:
+                d = {k:c[k] for k in self.features}
                 cat_list.append(d)
             else:
                 cat_list.append(c)
@@ -76,7 +77,7 @@ class CityNeighborhood(object):
         int_id = df.index.map(lambda x: int(x.split('_')[1]))
         df['int_id'] = int_id
         df['name'] = [ self.neighborhoods[i] for i in int_id]
-        count = COUNTS[self.city]
+        count = self.all_counts[self.city]
         df['count'] = [count[i] for i in int_id]
         df['cat_counters'] = self._get_cat_counters(df.categories)
         return df
@@ -87,7 +88,7 @@ class CityNeighborhood(object):
         t = TfidfTransformer()
         catX = v.fit_transform(self.neighborhood_df['cat_counters'])
         catX = t.fit_transform(catX).toarray()
-        self._features = v.feature_names_
+        self.features = v.feature_names_
         otherX = self.neighborhood_df[['dollar','stars','count']].values
         otherX = otherX - otherX.mean(axis=0)
         otherX = otherX/norm(otherX,axis=0)
@@ -106,18 +107,25 @@ class CityNeighborhood(object):
         sampleA = self.business_df[rowsA].copy()
         sampleB = self.business_df[~rowsA].copy()
         cityA = CityNeighborhood(city = self.city, business_df=sampleA, \
-                            _features = self._features)
+                            features = self.features)
         cityB = CityNeighborhood(city = self.city, business_df=sampleB, \
-                            _features = self._features)
+                            features = self.features)
         return cityA,cityB
 
-    def self_validate(self,Niterations=5):
+    def self_validate(self,Niterations=5,feature_func= None):
         outcomes = []
         N = len(self.neighborhood_df)
         for i in range(Niterations):
             c1, c2 = self._rand_split()
-            sim_split = cosine_similarity(c1.X,c2.X)
-            outcome.append(sim_split.argmax(axis=0) == np.arange(N).mean())
+            if feature_func == None:
+                X1 = c1.X
+                X2 = c2.X
+            else:
+                X1 = feature_func(c1)
+                X2 = feature_func(c2)
+            sim_split = cosine_similarity(X1,X2)
+            outcome = (sim_split.argmax(axis=0) == np.arange(N)).mean()
+            outcomes.append(outcome)
         return np.mean(outcomes)
 
 def join(cityA,cityB):
