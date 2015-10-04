@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+​
+  <style>
+        #keyword {
+        	width: 200px;
+        	font-size: 1em;
+        }
+​
+        #results {
+        	width: 204px;
+        	display: absolute;
+        	border: 1px solid #c0c0c0;
+          display: none;
+        }
+​
+        #results .item {
+        	padding: 3px;
+        	font-family: Helvetica;
+        	border-bottom: 1px solid #c0c0c0;
+        }
+​
+        #results .item:last-child {
+        	border-bottom: 0px;
+        }
+​
+        #results .item:hover {
+        	background-color: #f2f2f2;
+        	cursor: pointer;
+        }
+  </style>
+​
+  <title>Auto-complete tutorial</title>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  <script src="../static/js/autocomplete.js"></script>
+</head>
+<body>
+  	<input type="text" value="" placeholder="Search" id="keyword">
+    <div class="results" id="results"></div>
+</body>
+</html>
+​
