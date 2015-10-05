@@ -152,6 +152,7 @@
 
   }
 
+
   function getInfoCallback(map, content) {
       var infowindow              = new google.maps.InfoWindow({content: content});
       return function() {
@@ -315,7 +316,12 @@ Scroll down for more info
           .attr("y", function(d) { return y(d.frequency); })
           .attr("height", function(d) { return height - y(d.frequency); })
           .on('mouseover', tip.show)
-          .on('mouseout', tip.hide);
+          .on('mouseout', tip.hide)
+          .on('click',pclick);
+
+    function pclick(d) {
+      $.get("")
+    }
 
     function type(d) {
       d.frequency = +d.frequency;
