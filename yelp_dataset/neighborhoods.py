@@ -2,10 +2,10 @@ import numpy as np
 import pandas as pd
 from collections import Counter
 from sklearn.feature_extraction import DictVectorizer
-from sklearn.feature_extraction.text import TfidfTransformer
+#from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 from scipy.stats import rankdata
-import ipdb
+#import ipdb
 import getneighborhoods as gn
 import create_new_yelp_df as ydf
 from numpy.linalg import norm
@@ -155,7 +155,6 @@ class CityNeighborhood(object):
     def _construct_feature_matrix(self):
         #ipdb.set_trace()
         v = DictVectorizer()
-        t = TfidfTransformer()
         catX = v.fit_transform(self.neighborhood_df['cat_counters'])
         catX = catX.toarray()#t.fit_transform(catX).toarray()
         self.catX = catX

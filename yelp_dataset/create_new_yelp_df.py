@@ -24,3 +24,16 @@ def create_bus_df_from_neighborhoods(city='BOS'):
     df = df[df.categories.notnull()]
     df['city']=city
     return df
+
+def create_busdf_for_sql(city='BOS'):
+    # read the entire file into a pandas dataframe
+    dirname = os.path.join(os.path.dirname(__file__),"neighborhoods/")
+    command = 'ls '+dirname+city+'*'
+    with os.popen(command) as com:
+        files_dirty = com.readlines()
+        files = [f.strip() for f in files_dirty]
+
+    frame_gen = (process_json(f) for f in files)
+    df = pd.concat(frame_gen)
+    df['city']=city
+    return df

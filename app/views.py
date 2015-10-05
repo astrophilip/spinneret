@@ -1,15 +1,9 @@
 from app import app
 from flask import render_template, request, jsonify
-import pymysql as mdb
 
 import yelp_dataset.neighborhoods as neighborhoods
 from yelp_dataset.neighborhoods import CityNeighborhood, unpickle
-import cPickle as pickle
-import numpy as np
-import pandas as pd
 import os
-import json
-
 
 dirname = os.path.join(os.path.dirname(__file__),"../")
 
@@ -70,9 +64,10 @@ def cities_output():
     output_polygon = acity.neighborhood_polygon(output_nid)
     output_bounds = bounds_poly(output_polygon)
 
-    #keywords = nyc.getKeyWords(home_neighborhood,num_results=10)
     keywords,weights = neighborhoods.getKeywords(hcity,acity,input_nid,output_nid)
     kw= write_keywords_weights(keywords,weights)
+
+    #select id,name,stars,cat,neighborhood from business_nyc where nid = 70 and cat= 'Dim Sum' order by stars is null, -stars limit 15;
 
     return render_template("output.html",
             home_city = city,
